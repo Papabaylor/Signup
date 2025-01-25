@@ -1,4 +1,3 @@
-// SignupAPI.java
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,37 +14,38 @@ public class SignupAPI {
     }
 
     // Method for user signup
-    public boolean signupUser(String username, String password, String email, String dietaryPreferences, String location, boolean useGPS, boolean emailAlerts, boolean pushNotifications) {
-    
-        if (validateInput(username, password, email)) {
-            return createUserAccount(username, password, email, dietaryPreferences, location, useGPS, emailAlerts, pushNotifications);
+    public boolean signupUser(String fullName, String email, String password, String dietaryPreferences, String location, boolean useGPS, boolean emailAlerts, boolean pushNotifications) {
+        if (validateInput(fullName, email, password)) {
+            return createUserAccount(fullName, email, password, dietaryPreferences, location, useGPS, emailAlerts, pushNotifications);
         } else {
             return false;
-if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
-    eturn false;
-}
+        }
+    }
+
     // Method to validate input
-    private boolean validateInput(String username, String password, String email) {
-        // Placeholder for input validation logic
+    private boolean validateInput(String fullName, String email, String password) {
+        if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            return false;
+        }
+        // Additional validation logic can be added here
         return true;
     }
 
     // Method to create user account in the database
-    private boolean createUserAccount(String username, String password, String email, String dietaryPreferences, String location, boolean useGPS, boolean emailAlerts, boolean pushNotifications) {
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-String sql = "INSERT INTO users (username, password, email, dietary_preferences, location, use_gps, email_alerts, push_notifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";String sql = "INSERT INTO users (username, password, email, dietary_preferences, location, use_gps, email_alerts, push_notifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-            stmt.setString(3, email);
-            stmt.setString(4, dietaryPreferences);
-            stmt.setString(5, location);
-            stmt.setBoolean(6, useGPS);
-            stmt.setBoolean(7, emailAlerts);
-            stmt.setBoolean(8, pushNotifications);
-
-            int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;
+    private boolean createUserAccount(String fullName, String email, String password, String dietaryPreferences, String location, boolean useGPS, boolean emailAlerts, boolean pushNotifications) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            String sql = "INSERT INTO users (fullName, email, password, dietaryPreferences, location, useGPS, emailAlerts, pushNotifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, fullName);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, password);
+            preparedStatement.setString(4, dietaryPreferences);
+            preparedStatement.setString(5, location);
+            preparedStatement.setBoolean(6, useGPS);
+            preparedStatement.setBoolean(7, emailAlerts);
+            preparedStatement.setBoolean(8, pushNotifications);
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
